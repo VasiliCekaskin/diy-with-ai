@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   buildPrompt, checkPrompt, handbookFile, initialGuide, installCommand, isAnswered, launchPrompt, parseSaved,
-  modelAdvice, newComputerPrompt, guideUrl, restartOptions, quitCommand, previewPrompt, versionCommand, browserTestPrompt, codexBrowserPrompt, CODEX_BROWSER_MCP, questions, setupPrompt, startCommand, stepMeta, steps,
+  modelAdvice, newComputerPrompt, websiteOutcomes, guideUrl, restartOptions, quitCommand, previewPrompt, versionCommand, browserTestPrompt, codexBrowserPrompt, CODEX_BROWSER_MCP, questions, setupPrompt, startCommand, stepMeta, steps,
 } from '../lib/guide';
 import type { Agent, Answered, Domain, Installed, Locale, Os } from '../lib/types';
 
@@ -220,4 +220,18 @@ test('new-computer prompt reinstalls, signs in, clones the private repo and chan
   assert.ok(en.includes('I don’t create new ones'));
   // the handbook written at launch points back here
   assert.ok(launchPrompt('en', all[0]).includes(guideUrl('en')) && launchPrompt('en', all[0]).includes('“New computer” prompt'));
+});
+
+test('outcomes list what the visitor concretely has at the end', () => {
+  const later = websiteOutcomes('en', { os: 'mac', agent: 'claude', installed: 'no', domain: 'later' });
+  const titles = later.map(o => o.title).join(' | ');
+  assert.match(titles, /website/i);
+  assert.match(titles, /GitHub/);
+  assert.match(titles, /Cloudflare/);
+  assert.match(titles, /Claude Code/);
+  assert.match(titles, /MY-WEBSITE\.md/);
+  assert.doesNotMatch(titles, /domain/i);
+  const want = websiteOutcomes('de', { os: 'windows', agent: 'codex', installed: 'yes', domain: 'want' });
+  assert.ok(want.some(o => /Domain/.test(o.title)));
+  assert.ok(want.some(o => o.title.includes('MEINE-WEBSITE.md')));
 });

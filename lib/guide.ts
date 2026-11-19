@@ -424,7 +424,7 @@ function domainSection(locale: Locale, d: Domain) {
 }
 
 /** Step 5: verify, publish, connect domain, write the handbook. */
-export const GUIDE_URL = 'https://diy-with-ai.cekask.in';
+export const GUIDE_URL = 'https://diywithai.cekask.in';
 export const guideUrl = (locale: Locale) => `${GUIDE_URL}/${locale}/guides/business-website`;
 
 /**
@@ -533,4 +533,40 @@ export function parseSaved(raw: unknown): SavedGuide {
   let step = typeof r.step === 'string' && (steps as string[]).includes(r.step) ? (r.step as StepId) : 'start';
   if (step !== 'start' && !isAnswered(situation)) step = 'start';
   return { version: 3, situation, step, done: isAnswered(situation) ? done : [] };
+}
+
+/* ---------- what the visitor has at the end ---------- */
+
+export type Outcome = { icon: string; title: string; text: string };
+
+/**
+ * "What you'll have afterwards", shown at the top of the website guide.
+ * Every guide gets its own list like this; keep it concrete and honest.
+ */
+export function websiteOutcomes(locale: Locale, s: Situation): Outcome[] {
+  const list: Outcome[] = [
+    { icon: '🌐', title: t(locale, 'Deine eigene Website, live im Internet', 'Your own website, live on the internet'),
+      text: s.domain === 'later'
+        ? t(locale, 'Erst unter einer kostenlosen Adresse (…workers.dev), deine Domain kannst du später verbinden.', 'At a free address first (…workers.dev); you can connect your domain later.')
+        : s.domain === null
+        ? t(locale, 'Unter deiner eigenen Domain (oder erst einer kostenlosen Adresse), mit sicherer Verbindung (https).', 'At your own domain (or a free address first), with a secure connection (https).')
+        : t(locale, 'Unter deiner eigenen Domain, mit sicherer Verbindung (https).', 'At your own domain, with a secure connection (https).') },
+    { icon: '🐙', title: t(locale, 'Ein GitHub-Konto', 'A GitHub account'),
+      text: t(locale, 'Kostenlos. Dort liegt eine private, sichere Kopie deiner Website (der „Code“). Damit kannst du jederzeit weitermachen, auch auf einem neuen Computer.', 'Free. It holds a private, safe copy of your website (the “code”), so you can always continue, even on a new computer.') },
+    { icon: '☁️', title: t(locale, 'Ein Cloudflare-Konto', 'A Cloudflare account'),
+      text: s.domain === 'want'
+        ? t(locale, 'Kostenlos. Cloudflare stellt deine Website ins Internet und verwaltet deine neue Domain (die Domain kostet einen kleinen Jahresbetrag).', 'Free. Cloudflare puts your website online and manages your new domain (the domain costs a small yearly fee).')
+        : t(locale, 'Kostenlos. Cloudflare stellt deine Website ins Internet (das „Hosting“).', 'Free. Cloudflare puts your website online (the “hosting”).') },
+  ];
+  if (s.domain === 'have') list.push({ icon: '🔗', title: t(locale, 'Deine Domain, verbunden mit der neuen Website', 'Your domain, connected to the new website'),
+    text: t(locale, 'Sie bleibt bei deinem bisherigen Anbieter, zeigt aber auf die neue Website. Deine E-Mails laufen weiter.', 'It stays with your current provider but points to the new website. Your email keeps working.') });
+  if (s.domain === 'want') list.push({ icon: '🔗', title: t(locale, 'Deine eigene Domain', 'Your own domain'),
+    text: t(locale, 'Zum Beispiel meine-firma.de – gekauft erst, nachdem du den Preis gesehen und zugestimmt hast.', 'For example my-company.com – bought only after you have seen and approved the price.') });
+  list.push(
+    { icon: '🤖', title: s.agent ? t(locale, `${agentName(s.agent)} auf deinem Computer`, `${agentName(s.agent)} on your computer`) : t(locale, 'Deine KI auf deinem Computer', 'Your AI on your computer'),
+      text: t(locale, 'Eingerichtet und mit deinem Browser verbunden. Sie hilft dir auch später bei Änderungen: einfach sagen, was anders sein soll.', 'Set up and connected to your browser. It keeps helping you with changes later: just say what should be different.') },
+    { icon: '📘', title: t(locale, `Dein Handbuch ${handbookFile(locale)}`, `Your handbook ${handbookFile(locale)}`),
+      text: t(locale, 'Alle Konten deiner Website, wie du etwas änderst und wie du alles wieder entfernst – in einfachen Worten.', 'Every account your website uses, how to change things and how to remove everything again – in plain words.') },
+  );
+  return list;
 }

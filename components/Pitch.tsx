@@ -1,4 +1,5 @@
 import { tr } from '@/lib/i18n';
+import type { Outcome } from '@/lib/guide';
 import type { Locale } from '@/lib/types';
 
 /** The "almost zero costs" pitch. Keep it truthful: the domain and the AI plan are the only costs. */
@@ -33,5 +34,23 @@ export function FitNote({ locale }: { locale: Locale }) {
           '✗ Big websites, CMS systems (e.g. WordPress with lots of pages or plugins) and online shops are not guaranteed to transfer completely.')}</span>
       </p>
     </aside>
+  );
+}
+
+/** "What you'll have afterwards": the concrete result of a guide, shown before step 1. Reusable by every guide. */
+export function YouWillHave({ locale, items }: { locale: Locale; items: Outcome[] }) {
+  return (
+    <section className="outcomes" aria-labelledby="outcomes-title">
+      <h2 id="outcomes-title">{tr(locale, 'Das hast du am Ende', 'What you’ll have at the end')}</h2>
+      <p>{tr(locale, 'Alles gehört dir und läuft über deine eigenen Konten.', 'Everything belongs to you and runs on your own accounts.')}</p>
+      <ol>
+        {items.map((item, i) => (
+          <li key={item.title}>
+            <span className="outcome-icon" aria-hidden="true">{item.icon}</span>
+            <span><strong>{i + 1}. {item.title}</strong><span className="outcome-text">{item.text}</span></span>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }

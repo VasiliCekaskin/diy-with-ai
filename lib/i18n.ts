@@ -19,7 +19,7 @@ export const copy = {
     phases: ['Sag, wo du stehst.', 'Prompt kopieren.', 'Deine KI macht den Rest.'],
     phaseDescriptions: ['Welcher Computer, welche KI, schon etwas installiert? Vier Klicks, dann passt alles zu dir.', 'Bei jedem Schritt gibt es einen fertigen Text. Kopieren, bei deiner KI einfügen, Enter.', 'Sie installiert, fragt dich nach deinem Business, baut, zeigt dir alles und stellt es erst nach deinem OK online.'],
     aboutTitle: 'Ein bisschen Hilfe zur Selbsthilfe.', aboutText: 'Ich baue praktische Software und Automatisierungen. Hier teile ich meine Cheatsheets und konkreten KI-Anweisungen, damit du die Dinge selbst in die Hand nehmen kannst.',
-    contact: 'Lieber machen lassen?', contactSub: 'Wenn du feststeckst oder deine Zeit anders nutzen möchtest: Lass uns sprechen.', portfolio: 'Zu meinem Portfolio',
+    contact: 'Lieber machen lassen?', contactSub: 'Wenn du feststeckst oder deine Zeit anders nutzen möchtest: Lass uns sprechen.', portfolio: 'Zu meinem Portfolio', imprint: 'Impressum', privacyPolicy: 'Datenschutz',
     footer: 'Praktische Lösungen. Selbst gemacht. Mit KI.', privacy: 'Deine Auswahl bleibt in diesem Browser. Keine Kontenverknüpfung. Keine Analyse-Tracker.',
   },
   en: {
@@ -38,7 +38,7 @@ export const copy = {
     phases: ['Say where you stand.', 'Copy a prompt.', 'Your AI does the rest.'],
     phaseDescriptions: ['Which computer, which AI, anything installed yet? Four clicks and everything fits you.', 'Every step has a ready-made text. Copy it, paste it into your AI, press Enter.', 'It installs, asks about your business, builds, shows you everything and only goes live after your OK.'],
     aboutTitle: 'A little help to help yourself.', aboutText: 'I build practical software and automations. Here I share my cheatsheets and specific AI instructions so you can take things into your own hands.',
-    contact: 'Prefer someone to handle it?', contactSub: 'If you get stuck or would rather spend your time elsewhere, let’s talk.', portfolio: 'Visit my portfolio',
+    contact: 'Prefer someone to handle it?', contactSub: 'If you get stuck or would rather spend your time elsewhere, let’s talk.', portfolio: 'Visit my portfolio', imprint: 'Legal notice', privacyPolicy: 'Privacy',
     footer: 'Practical solutions. Made by you. With AI.', privacy: 'Your choices stay in this browser. No account connections. No analytics trackers.',
   },
 };

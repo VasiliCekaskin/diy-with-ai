@@ -5,9 +5,10 @@ import {
   STORAGE_KEY, agentName, browserTestPrompt, buildPrompt, checkPrompt, codexBrowserPrompt, handbookFile, initialGuide, installCommand, isAnswered,
   freshTerminalSteps, launchPrompt, modelAdvice, newComputerPrompt, officialLinks, restartOptions, versionCommand, openTerminalSteps, parseSaved, previewPrompt, questions, setupPrompt, startCommand,
   stepMeta, steps, terminalName,
+  websiteOutcomes,
 } from '@/lib/guide';
 import { tr } from '@/lib/i18n';
-import { CostPitch, FitNote } from './Pitch';
+import { CostPitch, FitNote, YouWillHave } from './Pitch';
 import type { Answered, Locale, SavedGuide, Situation, StepId } from '@/lib/types';
 
 /* ---------- small building blocks ---------- */
@@ -406,6 +407,7 @@ export function Guide({ locale }: { locale: Locale }) {
         <p className="eyebrow">{tr(locale, 'Deine eigene Website · 6 Schritte', 'Your own website · 6 steps')}</p>
         <h1>{tr(locale, 'Kopieren. Einfügen.', 'Copy. Paste.')} <span>{tr(locale, 'Fertig.', 'Done.')}</span></h1>
         <p className="guide-intro">{tr(locale, 'Du musst nichts von Technik verstehen. Bei jedem Schritt kopierst du einen Text und gibst ihn deiner KI. Sie erledigt den Rest und erklärt dir unterwegs alles.', 'You don’t need to understand anything technical. At each step you copy a text and give it to your AI. It does the rest and explains everything along the way.')}</p>
+        <YouWillHave locale={locale} items={websiteOutcomes(locale, s)} />
         <div className="pitch-row"><CostPitch locale={locale} /><FitNote locale={locale} /></div>
       </div>
 

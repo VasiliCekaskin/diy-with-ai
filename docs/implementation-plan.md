@@ -7,7 +7,7 @@ Target: /Users/busraaslan/Desktop/vasili/code/diy-with-ai (new independent proje
 
 ## Objective
 
-Deliver a functioning German-first/English standalone Next.js tutorial platform, prepared for Vercel and the domain diy-with-ai.cekask.in. A beginner follows three phases, receives context-specific mini tutorials and downloadable local-agent instructions, then reviews publishing, DNS, legal, consent and maintenance steps. The customer's own assistant and accounts do the website work; this platform never claims to have executed or verified it.
+Deliver a functioning German-first/English standalone Next.js tutorial platform, prepared for Vercel and the domain diywithai.cekask.in. A beginner follows three phases, receives context-specific mini tutorials and downloadable local-agent instructions, then reviews publishing, DNS, legal, consent and maintenance steps. The customer's own assistant and accounts do the website work; this platform never claims to have executed or verified it.
 
 ## Classification evidence
 

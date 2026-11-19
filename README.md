@@ -2,7 +2,7 @@
 
 A standalone, German-first/English toolkit for nontechnical business owners. The first guide takes a complete beginner from "which computer do you have?" to a live website in six steps, using copy-paste prompts for Claude Code or Codex.
 
-Platform URL: **https://diy-with-ai.cekask.in**. This application is prepared for Vercel. Visitor websites use the visitor’s own GitHub, Cloudflare and (optional) domain accounts. There is no relationship with the TrackDemos backend.
+Platform URL: **https://diywithai.cekask.in**. This application is prepared for Vercel. Visitor websites use the visitor’s own GitHub, Cloudflare and (optional) domain accounts. There is no relationship with the TrackDemos backend.
 
 ## Local development
 
@@ -49,13 +49,13 @@ This is an ordinary Next.js project; no custom runtime, server, environment vari
 2. Import the repository into Vercel and select the automatically detected **Next.js** preset. If this directory is inside your repository, set the Vercel root directory to `diy-with-ai`.
 3. Use the default install/build configuration (`npm ci`, `npm run build`). Vercel serves the standard `.next` build output.
 4. Review the preview deployment before assigning the production subdomain.
-5. Add `diy-with-ai.cekask.in` in Vercel’s domain settings and follow the exact DNS record shown by Vercel. Do not alter unrelated records or the root domain’s email setup.
+5. Add `diywithai.cekask.in` in Vercel’s domain settings and follow the exact DNS record shown by Vercel. Do not alter unrelated records or the root domain’s email setup.
 
 No hosting account has been accessed and no deployment, GitHub push or DNS edit has been performed by this implementation.
 
 ## Before public release
 
-The platform owner must supply **their own** appropriate legal notice/privacy information and decide the correct links for this new subdomain. The footer links to the portfolio; it does not pretend the portfolio’s existing legal documents automatically cover this service. No legal identity or placeholder legal document has been invented. Hosting request logs and Vercel’s processing must be reflected in the actual privacy information. No optional tracking scripts, analytics, third-party fonts or embedded provider dashboards are included.
+The imprint and privacy policy live on the main domain (`https://cekask.in/<lang>/impressum` and `/datenschutz`) and explicitly cover this subdomain (hosting on Vercel, the guide progress in `localStorage`, links to AI and account providers). The footer links there; this site has no legal pages of its own. Keep them in sync when this site starts processing anything new (the portfolio repo's `content/<locale>/legal.tsx`). No optional tracking scripts, analytics, third-party fonts or embedded provider dashboards are included, so this site needs no consent banner.
 
 The guide tells the AI to draft an Impressum and privacy policy from the visitor’s real details and to say clearly that this is not legal advice. The generated sites avoid trackers, cookies and third-party embeds, so they don’t need a consent banner.
 
