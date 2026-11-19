@@ -10,6 +10,7 @@ import {
 } from '@/lib/seo-guide';
 import type { Locale, SavedSeoGuide, SeoAnswered, SeoSituation, SeoStepId } from '@/lib/types';
 import { AgentStep, CopyBlock, PromptIntro, RestartSession, Tip, WhatHappens } from './guide-ui';
+import { InfoHint, InfoHintProvider } from './InfoHint';
 import { YouWillHave } from './Pitch';
 
 /* ---------- step 0: where do you stand ---------- */
@@ -75,7 +76,12 @@ function ConsoleStep({ locale, s }: { locale: Locale; s: SeoAnswered }) {
       <p>{tr(locale, `Kopiere den Prompt, füge ihn bei ${name} im ${terminalName(locale, s.os)}-Fenster ein und drücke Enter.`, `Copy the prompt, paste it into ${name} in the ${terminalName(locale, s.os)} window and press Enter.`)}</p>
       <CopyBlock locale={locale} label={tr(locale, 'Prompt: Google Search Console', 'Prompt: Google Search Console')} text={consolePrompt(locale, s)} />
       {s.platform === 'code' ? <RestartSession locale={locale} s={s} folder={seoFolder(s)} /> : null}
-      <Tip>{tr(locale, 'Die Bestätigung über die Domain (DNS) braucht manchmal ein paar Stunden. Dann einfach später wiederkommen und dasselbe sagen: „Bitte jetzt bestätigen.“', 'Verifying through your domain (DNS) sometimes takes a few hours. Then just come back later and say: “Please verify now.”')}</Tip>
+      <Tip>{tr(locale, 'Die Bestätigung über die Domain (DNS) braucht manchmal ein paar Stunden. Dann einfach später wiederkommen und dasselbe sagen: „Bitte jetzt bestätigen.“', 'Verifying through your domain (DNS) sometimes takes a few hours. Then just come back later and say: “Please verify now.”')}
+        {' '}<InfoHint locale={locale} title="DNS" teaser={tr(locale, 'Ein kleiner Eintrag, der beweist: die Domain gehört dir.', 'A small entry that proves the domain is yours.')}>
+          <p>{tr(locale,
+            'DNS ist die Adressliste hinter deiner Domain. Google verlangt dort einmalig einen kleinen, unsichtbaren Eintrag als Beweis, dass die Domain wirklich dir gehört. Die KI sagt dir genau, was du bei deinem Domain-Anbieter einfügen musst – es verändert sonst nichts an deiner Website.',
+            'DNS is the address list behind your domain. Google asks for one small, invisible entry there as proof that the domain is really yours. The AI tells you exactly what to add at your domain provider – it doesn’t change anything else about your website.')}</p>
+        </InfoHint></Tip>
       <h3 className="sub">{tr(locale, 'B · Prüfen', 'B · Check')}</h3>
       <p>{tr(locale, 'Wenn A fertig ist: Dieser Prompt prüft, ob alles richtig eingerichtet ist. Er ändert nichts.', 'When A is done: this prompt checks that everything is set up correctly. It doesn’t change anything.')}</p>
       <CopyBlock locale={locale} label={tr(locale, 'Prompt: Alles bei Google bereit?', 'Prompt: all set on Google?')} text={consoleCheckPrompt(locale, s)} />
@@ -187,13 +193,21 @@ export function SeoGuide({ locale }: { locale: Locale }) {
   }
 
   return (
+    <InfoHintProvider locale={locale}>
     <main id="main" className="guide page-width">
       <div className="guide-top">
-        <p className="eyebrow">{tr(locale, 'Bei Google gefunden werden · 5 Schritte', 'Get found on Google · 5 steps')}</p>
+        <p className="eyebrow">{tr(locale, 'Bei Google gefunden werden · 5 Schritte', 'Get found on Google · 5 steps')}
+          {' '}<InfoHint locale={locale} title={tr(locale, 'Die 5 Schritte', 'The 5 steps')} teaser={tr(locale, 'Jederzeit zurück oder vor – nichts geht dabei verloren.', 'Jump back or forward any time – nothing gets lost.')}>
+            <p>{tr(locale,
+              'Die Leiste oben zeigt dir, wo du gerade stehst. Du kannst jederzeit zu einem früheren Schritt zurückklicken, ohne etwas zu verlieren. Dein Fortschritt wird nur in diesem Browser auf diesem Computer gemerkt – niemand sonst sieht ihn.',
+              'The bar at the top shows where you are. You can click back to an earlier step any time without losing anything. Your progress is only remembered in this browser on this computer – nobody else sees it.')}</p>
+          </InfoHint>
+        </p>
         <h1>{tr(locale, 'Bei Google.', 'On Google.')} <span>{tr(locale, 'Gefunden.', 'Found.')}</span></h1>
         <p className="guide-intro">{tr(locale,
           'Melde deine Website bei Google an und mach sie fit für die Suche – für die Website aus unserer Anleitung oder jede andere, egal ob WordPress, Wix, Shopify oder eigener Code. Du kopierst Prompts, deine KI erledigt die Arbeit.',
           'Register your website with Google and get it ready for search – the website from our guide or any other, whether WordPress, Wix, Shopify or your own code. You copy prompts, your AI does the work.')}</p>
+        <Tip>{tr(locale, 'Siehst du ein Kreis mit „i“? Klick drauf für eine einfache Erklärung – ganz ohne Technik-Vorwissen.', 'See a circled “i”? Click it for a plain-language explanation – no tech background needed.')}</Tip>
         <YouWillHave locale={locale} items={seoOutcomes(locale, s)} />
         <div className="pitch-row">
           <aside className="cost-pitch compact" aria-label={tr(locale, 'Kosten', 'Costs')}>
@@ -272,5 +286,6 @@ export function SeoGuide({ locale }: { locale: Locale }) {
         <button type="button" className="text-button" onClick={reset}>{tr(locale, 'Neu anfangen', 'Start over')}</button>
       </p>
     </main>
+    </InfoHintProvider>
   );
 }

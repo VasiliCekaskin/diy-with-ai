@@ -10,6 +10,7 @@ import {
 } from '@/lib/guide';
 import { tr } from '@/lib/i18n';
 import { AgentStep, CopyBlock, Numbered, OldWebsiteWarning, PromptIntro, RestartSession, Tip, WhatHappens } from './guide-ui';
+import { InfoHint, InfoHintProvider } from './InfoHint';
 import { CostPitch, FitNote, YouWillHave } from './Pitch';
 import type { Answered, Locale, SavedGuide, Situation, StepId } from '@/lib/types';
 
@@ -54,7 +55,21 @@ function AccountsStep({ locale, s }: { locale: Locale; s: Answered }) {
   const name = agentName(s.agent);
   return (
     <>
-      <PromptIntro>{tr(locale, `Deine Website braucht zwei kostenlose Konten: GitHub (bewahrt den Code sicher auf) und Cloudflare (stellt die Website ins Internet). ${name} installiert alles Nötige und führt dich durch die Anmeldung.`, `Your website needs two free accounts: GitHub (keeps the code safe) and Cloudflare (puts the website on the internet). ${name} installs everything needed and walks you through signing in.`)}</PromptIntro>
+      <PromptIntro>
+        {tr(locale, `Deine Website braucht zwei kostenlose Konten: GitHub`, `Your website needs two free accounts: GitHub`)}
+        <InfoHint locale={locale} title="GitHub" teaser={tr(locale, 'Eine kostenlose, sichere Kopie deiner Website.', 'A free, safe copy of your website.')}>
+          <p>{tr(locale,
+            'GitHub speichert eine sichere Kopie deiner Website – wie eine Festplatte, die nie kaputtgehen kann. Ändert sich etwas, wird einfach eine neue Version gespeichert; die alte bleibt erhalten. Nur du (und deine KI mit deiner Erlaubnis) hat Zugriff.',
+            'GitHub stores a safe copy of your website – like a hard drive that can’t break. When something changes, a new version is simply saved; the old one stays around. Only you (and your AI, with your permission) have access.')}</p>
+        </InfoHint>
+        {tr(locale, ` (bewahrt den Code sicher auf) und Cloudflare`, ` (keeps the code safe) and Cloudflare`)}
+        <InfoHint locale={locale} title="Cloudflare" teaser={tr(locale, 'Der Dienst, der deine Website ins Internet stellt.', 'The service that puts your website on the internet.')}>
+          <p>{tr(locale,
+            'Cloudflare ist der Dienst, der deine Website tatsächlich ins Internet stellt, damit jeder sie unter deiner Adresse aufrufen kann – wie der Vermieter für deine Website im Netz. Das Hosting selbst ist für Websites wie diese kostenlos.',
+            'Cloudflare is the service that actually puts your website on the internet so anyone can open it at your address – think of it as the landlord for your website online. The hosting itself is free for websites like this one.')}</p>
+        </InfoHint>
+        {tr(locale, ` (stellt die Website ins Internet). ${name} installiert alles Nötige und führt dich durch die Anmeldung.`, ` (puts the website on the internet). ${name} installs everything needed and walks you through signing in.`)}
+      </PromptIntro>
       <WhatHappens locale={locale} items={[
         ['ai', tr(locale, `${name} erklärt dir jeden Schritt und übernimmt die schwere Arbeit: Es installiert die Werkzeuge und klickt sich – per Browser-Automatisierung – für dich durch GitHub und Cloudflare.`, `${name} explains every step and does the heavy lifting: it installs the tools and uses browser automation to click through GitHub and Cloudflare for you.`)],
         ['you', tr(locale, 'Manchmal kann die KI nicht ohne dich weitermachen – vor allem beim Registrieren der Konten, bei Passwörtern und Bestätigungscodes. Dann sagt sie dir genau, was du tun sollst.', 'Sometimes the AI can’t continue without you – especially when registering the accounts, for passwords and confirmation codes. It then tells you exactly what to do.')],
@@ -133,7 +148,19 @@ function LaunchStep({ locale, s, onGo }: { locale: Locale; s: Answered; onGo?: (
       : tr(locale, 'unter einer kostenlosen Adresse', 'at a free address');
   return (
     <>
-      <PromptIntro>{tr(locale, `Der letzte Prompt prüft noch einmal alles, stellt deine Website online ${domain}.`, `The last prompt checks everything once more and puts your website online ${domain}.`)}</PromptIntro>
+      <PromptIntro>
+        {tr(locale, `Der letzte Prompt prüft noch einmal alles, stellt deine Website online ${domain}.`, `The last prompt checks everything once more and puts your website online ${domain}.`)}
+        {s.domain !== 'later' ? (
+          <InfoHint locale={locale} title={tr(locale, 'Was ist eine Domain?', 'What is a domain?')} teaser={tr(locale, 'Deine Adresse im Internet, z. B. deinname.de', 'Your address on the internet, e.g. yourname.com')}>
+            <p>{tr(locale,
+              'Eine Domain ist einfach deine Adresse im Internet – das, was Leute in die Adresszeile des Browsers eingeben, z. B. „deinefirma.de“. Sie gehört dir und bleibt bei dir, egal wo deine Website gehostet ist.',
+              'A domain is simply your address on the internet – what people type into the browser’s address bar, e.g. “yourcompany.com”. It belongs to you and stays yours, no matter where your website is hosted.')}</p>
+            {s.domain === 'have' ? <p>{tr(locale,
+              'Weil du schon eine Domain hast, zeigt dir die KI, was du bei deinem bisherigen Anbieter in den DNS-Einstellungen (einer kleinen Liste von technischen Adressen) umstellen musst – einmalig, und sie sagt dir Schritt für Schritt, was genau du tippst.',
+              'Since you already have a domain, the AI shows you what to change in your current provider’s DNS settings (a short list of technical addresses) – a one-time thing, and it tells you step by step what to type.')}</p> : null}
+          </InfoHint>
+        ) : null}
+      </PromptIntro>
       {s.domain === 'have' ? <OldWebsiteWarning locale={locale} /> : null}
       <WhatHappens locale={locale} items={[
         ['ai', tr(locale, 'Die KI prüft zuerst alles und zeigt dir eine ✅/❌-Liste.', 'The AI checks everything first and shows you a ✅/❌ list.')],
@@ -207,11 +234,19 @@ export function Guide({ locale }: { locale: Locale }) {
   const next = steps[index + 1];
 
   return (
+    <InfoHintProvider locale={locale}>
     <main id="main" className="guide page-width">
       <div className="guide-top">
-        <p className="eyebrow">{tr(locale, 'Deine eigene Website · 6 Schritte', 'Your own website · 6 steps')}</p>
+        <p className="eyebrow">{tr(locale, 'Deine eigene Website · 6 Schritte', 'Your own website · 6 steps')}
+          {' '}<InfoHint locale={locale} title={tr(locale, 'Die 6 Schritte', 'The 6 steps')} teaser={tr(locale, 'Jederzeit zurück oder vor – nichts geht dabei verloren.', 'Jump back or forward any time – nothing gets lost.')}>
+            <p>{tr(locale,
+              'Die Leiste oben zeigt dir, wo du gerade stehst. Du kannst jederzeit zu einem früheren Schritt zurückklicken, ohne etwas zu verlieren. Dein Fortschritt wird nur in diesem Browser auf diesem Computer gemerkt – niemand sonst sieht ihn.',
+              'The bar at the top shows where you are. You can click back to an earlier step any time without losing anything. Your progress is only remembered in this browser on this computer – nobody else sees it.')}</p>
+          </InfoHint>
+        </p>
         <h1>{tr(locale, 'Kopieren. Einfügen.', 'Copy. Paste.')} <span>{tr(locale, 'Fertig.', 'Done.')}</span></h1>
         <p className="guide-intro">{tr(locale, 'Du musst nichts von Technik verstehen. Bei jedem Schritt kopierst du einen Text und gibst ihn deiner KI. Sie erledigt den Rest und erklärt dir unterwegs alles.', 'You don’t need to understand anything technical. At each step you copy a text and give it to your AI. It does the rest and explains everything along the way.')}</p>
+        <Tip>{tr(locale, 'Siehst du ein Kreis mit „i“? Klick drauf für eine einfache Erklärung – ganz ohne Technik-Vorwissen.', 'See a circled “i”? Click it for a plain-language explanation – no tech background needed.')}</Tip>
         <YouWillHave locale={locale} items={websiteOutcomes(locale, s)} />
         <div className="pitch-row"><CostPitch locale={locale} /><FitNote locale={locale} /></div>
       </div>
@@ -278,5 +313,6 @@ export function Guide({ locale }: { locale: Locale }) {
         <button type="button" className="text-button" onClick={reset}>{tr(locale, 'Neu anfangen', 'Start over')}</button>
       </p>
     </main>
+    </InfoHintProvider>
   );
 }

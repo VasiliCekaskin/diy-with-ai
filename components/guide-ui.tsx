@@ -8,6 +8,7 @@ import {
   openTerminalSteps, restartOptions, startCommand, terminalName, versionCommand,
 } from '@/lib/guide';
 import { tr } from '@/lib/i18n';
+import { InfoHint } from './InfoHint';
 import type { AgentSetup, Locale } from '@/lib/types';
 
 /* ---------- small building blocks ---------- */
@@ -29,7 +30,24 @@ export function CopyBlock({ locale, text, label, kind = 'prompt' }: { locale: Lo
   return (
     <div className={`copy-block ${kind}`}>
       <div className="copy-head">
-        <span>{label}</span>
+        <span>{label}{' '}
+          <InfoHint
+            locale={locale}
+            id={`copy-kind-${kind}`}
+            title={kind === 'prompt' ? tr(locale, 'Was ist ein Prompt?', 'What is a prompt?') : tr(locale, 'Was ist ein Befehl?', 'What is a command?')}
+            teaser={kind === 'prompt'
+              ? tr(locale, 'Text für deine KI, kein Technik-Kram.', 'Text for your AI, no tech stuff.')
+              : tr(locale, 'Befehl fürs Terminal, nicht für die KI.', 'A command for the terminal, not for the AI.')}
+          >
+            {kind === 'prompt'
+              ? <p>{tr(locale,
+                  'Ein Prompt ist einfach ein Text, den du deiner KI gibst – wie eine Nachricht an eine Kollegin. Du fügst ihn genau so ein, wie er hier steht, drückst Enter, und die KI liest und erledigt ihn. Du musst nichts daran verstehen oder ändern.',
+                  'A prompt is just text you hand to your AI – like a message to a colleague. You paste it exactly as written here, press Enter, and the AI reads it and gets to work. You don’t need to understand or change anything in it.')}</p>
+              : <p>{tr(locale,
+                  'Ein Befehl ist eine kurze Anweisung an den Computer selbst, nicht an die KI – du fügst ihn ins Terminal-Fenster ein. Er installiert etwas oder startet ein Programm. Auch hier gilt: einfügen, Enter, abwarten.',
+                  'A command is a short instruction to the computer itself, not to the AI – you paste it into the terminal window. It installs something or starts a program. Same rule: paste, press Enter, wait.')}</p>}
+          </InfoHint>
+        </span>
         <button type="button" className={`button ${kind === 'prompt' ? 'primary' : 'secondary'} copy-button`} onClick={copy} aria-live="polite">
           {copied === 'ok' ? tr(locale, '✓ Kopiert', '✓ Copied') : copied === 'fail' ? tr(locale, 'Markiert – jetzt ⌘/Strg + C', 'Selected – now press ⌘/Ctrl + C') : kind === 'prompt' ? tr(locale, 'Prompt kopieren', 'Copy prompt') : tr(locale, 'Kopieren', 'Copy')}
         </button>
@@ -114,6 +132,11 @@ export function AgentStep({ locale, s, folder = FOLDER }: { locale: Locale; s: A
   const modelItem = (
     <>
       <strong>{tr(locale, 'Wähle ein starkes Modell, damit alles rund läuft:', 'Pick a strong model so everything runs smoothly:')}</strong>{' '}
+      <InfoHint locale={locale} title={tr(locale, 'Was ist ein „Modell“?', 'What’s a “model”?')} teaser={tr(locale, 'Die Denk-Engine hinter deiner KI.', 'The thinking engine behind your AI.')}>
+        <p>{tr(locale,
+          'Das Modell ist die „Denk-Engine“ hinter deiner KI – stärkere Modelle verstehen schwierigere Aufgaben besser, sind aber etwas langsamer. Für eine ganze Website lohnt sich das stärkste Modell, das dein Abo erlaubt. Du stellst es einmal ein und musst dich danach nicht mehr darum kümmern.',
+          'The model is the “thinking engine” behind your AI – stronger models understand harder tasks better, but are a bit slower. For building a whole website, the strongest model your plan allows is worth it. You set it once and don’t need to think about it again.')}</p>
+      </InfoHint>{' '}
       {tr(locale, 'Tippe ', 'Type ')}<code>/model</code>{tr(locale, ' ins Fenster und drücke Enter.', ' into the window and press Enter.')}
       <ul className="model-list">
         <li className="model-yes"><span aria-hidden="true">✓</span><Bold text={model.pick} /></li>
@@ -135,14 +158,27 @@ export function AgentStep({ locale, s, folder = FOLDER }: { locale: Locale; s: A
   const planNote = s.agent === 'claude'
     ? <>{tr(locale, 'Du brauchst ein bezahltes Claude-Abo (Pro oder höher). ', 'You need a paid Claude plan (Pro or higher). ')}<a href={officialLinks.claudePricing} target="_blank" rel="noreferrer">{tr(locale, 'Abo abschließen', 'Get a plan')}</a></>
     : <>{tr(locale, 'Du brauchst ein ChatGPT-Konto mit einem Abo, das Codex enthält. ', 'You need a ChatGPT account with a plan that includes Codex. ')}<a href={officialLinks.chatgptPricing} target="_blank" rel="noreferrer">{tr(locale, 'Abos ansehen', 'See plans')}</a></>;
-  const openTerm = <>{tr(locale, `Öffne ${term}. `, `Open ${term}. `)}{openTerminalSteps(locale, s.os)}<span className="muted"> {tr(locale, 'Ein Fenster mit Text erscheint. Keine Sorge – du musst hier nur einfügen.', 'A window with text appears. Don’t worry – you only paste things here.')}</span></>;
+  const openTerm = (
+    <>{tr(locale, `Öffne ${term}. `, `Open ${term}. `)}
+      <InfoHint locale={locale} title={term} teaser={tr(locale, 'Ein harmloses Textfenster, kein Hacker-Zeug.', 'A harmless text window, not hacker stuff.')}>
+        <p>{tr(locale,
+          `${term} ist ein ganz normales Programm, das schon auf deinem Computer ist – kein zusätzlicher Download. Es zeigt nur Text statt Bildern, aber du tippst darin nichts selbst: Du fügst nur die Texte aus dieser Anleitung ein und drückst Enter.`,
+          `${term} is a completely normal program already on your computer – nothing extra to download. It just shows text instead of pictures, but you don’t type anything yourself in it: you only paste the texts from this guide and press Enter.`)}</p>
+      </InfoHint>{' '}
+      {openTerminalSteps(locale, s.os)}<span className="muted"> {tr(locale, 'Ein Fenster mit Text erscheint. Keine Sorge – du musst hier nur einfügen.', 'A window with text appears. Don’t worry – you only paste things here.')}</span></>
+  );
 
   // "Yes" and "Not sure" both start with a check: an installed app (Claude Desktop, ChatGPT) does not put the CLI on the PATH.
   const browserTest = <CopyBlock locale={locale} label={tr(locale, 'Prompt: Browser-Test', 'Prompt: browser test')} text={browserTestPrompt(locale)} />;
   const testExpect = tr(locale, 'Ein Chrome-Fenster öffnet sich mit einer schlichten Seite, und die KI antwortet „Example Domain“. Dann ist alles bereit.', 'A Chrome window opens with a plain page, and the AI answers “Example Domain”. Then everything is ready.');
   const browserItem = (
     <>
-      <strong>{tr(locale, 'Verbinde deinen Browser, damit die KI später die Klickarbeit für dich machen kann:', 'Connect your browser so the AI can do the clicking for you later:')}</strong>
+      <strong>{tr(locale, 'Verbinde deinen Browser, damit die KI später die Klickarbeit für dich machen kann:', 'Connect your browser so the AI can do the clicking for you later:')}</strong>{' '}
+      <InfoHint locale={locale} title={tr(locale, 'Was ist Browser-Automatisierung?', 'What is browser automation?')} teaser={tr(locale, 'Die KI klickt für dich – sichtbar, und du kannst jederzeit stoppen.', 'The AI clicks for you – visibly, and you can stop any time.')}>
+        <p>{tr(locale,
+          'Damit kann deine KI ein echtes Browserfenster steuern – Felder ausfüllen, Buttons klicken, so wie du es selbst tun würdest. Das Fenster bleibt die ganze Zeit sichtbar, du siehst also jeden Klick live mit. Passwörter und Bestätigungscodes tippst du trotzdem immer selbst ein.',
+          'This lets your AI control a real browser window – filling in fields, clicking buttons, the same way you would yourself. The window stays visible the whole time, so you see every click as it happens. You still always type passwords and confirmation codes yourself.')}</p>
+      </InfoHint>
       {s.agent === 'claude' ? (
         <ol className="sub-steps">
           <li>{tr(locale, 'Du brauchst Google Chrome (oder Microsoft Edge). Noch nicht da? ', 'You need Google Chrome (or Microsoft Edge). Don’t have it? ')}<a href={officialLinks.chrome} target="_blank" rel="noreferrer">{tr(locale, 'Chrome herunterladen', 'Download Chrome')}</a></li>
