@@ -26,8 +26,9 @@ The gate runs Next route-type generation, TypeScript, the prompt/state tests in 
 - `/de` and `/en`: toolkit homepage.
 - `/{lang}/guides`: guide library; future guides are marked as not yet available.
 - `/{lang}/guides/business-website`: the website guide, one page with six steps.
+- `/{lang}/guides/google-search-seo`: Google Search Console & SEO, one page with five steps.
 
-`lib/types.ts` holds the shared types. `lib/guide.ts` holds the questions, the terminal commands and the prompt builders for both languages, plus the validation for saved progress. `components/Guide.tsx` is the interactive client page. `lib/i18n.ts` and `components/SiteShell.tsx` hold the homepage and shell copy.
+`lib/types.ts` holds the shared types. `lib/guide.ts` holds the website guide's questions, terminal commands, prompt builders and saved-progress validation, plus the helpers every guide shares (preamble, browser and safety rules, start/restart commands). `lib/seo-guide.ts` is the same for the Google guide. `components/guide-ui.tsx` holds the shared building blocks (copy boxes, "what happens", restart box, step 1 "set up your AI"); `components/Guide.tsx` and `components/SeoGuide.tsx` are the two interactive pages. A new guide gets its own `lib/<name>.ts` + component and reuses those blocks. `lib/i18n.ts` and `components/SiteShell.tsx` hold the homepage and shell copy.
 
 ## How the website guide works
 
@@ -40,6 +41,17 @@ The guide asks four questions (computer, AI, already installed?, domain) and the
 5. **Go live**: the AI checks everything, backs up to a private GitHub repository, deploys a Cloudflare Worker with static assets after an explicit yes, and connects or buys a domain if the visitor wants one. It then writes `MEINE-WEBSITE.md` / `MY-WEBSITE.md`, covering live addresses, every account and its costs, how to change things, and how to remove everything.
 
 Only the four answers and the current step are saved, in `localStorage`. No business data is entered on this site; the AI collects it in the visitor's own terminal. The page cannot see the visitor's computer or accounts, and step completion is self-reported.
+
+## How the Google & SEO guide works
+
+Start questions: which website (the one from the website guide, or another), and for another website what it's built with (WordPress, Wix, Squarespace, Shopify, Jimdo, Webflow, own code/framework, or "don't know"), plus computer, AI and installed. Answers from the website guide are prefilled.
+
+1. **Start your AI**: the same step 1 as the website guide. The AI works in `~/my-website` (DIY site) or `~/my-seo` (any other website, for notes and, if needed, the code).
+2. **Register with Google**: one prompt checks that Google may index the site (robots.txt, noindex, sitemap), then the AI drives Search Console in the browser: Domain property via a DNS TXT record (Cloudflare dashboard for DIY sites) or a URL prefix property (HTML file in `site/` for DIY, the platform's own way otherwise), sitemap submission and "request indexing". The visitor signs in to Google themselves. A second, read-only prompt checks the setup.
+3. **Improve your SEO**: a short keyword interview, a read-only audit (indexability, titles/descriptions/headings, local info and LocalBusiness JSON-LD, images, speed via PageSpeed Insights, trust, internal links), a top-5 plan, changes only after an OK (DIY: edit `site/`, local preview, "publish my changes"; platforms: their SEO settings; own code: the framework's idiomatic tools on a Git branch), then resubmitting to Google and an optional Google Business Profile.
+4. **Keep it up**: a monthly, read-only Search Console check that suggests 1–3 small improvements.
+
+Notes go into the handbook (DIY) or `MEINE-SEO-NOTIZEN.md` / `MY-SEO-NOTES.md`. The prompts forbid ranking promises, keyword stuffing, fake reviews, bought links and paid tools without asking. Platform dashboard paths are deliberately general ("check the platform's current help") because builders move them; review `lib/seo-guide.ts` together with the other provider steps.
 
 ## Vercel deployment
 

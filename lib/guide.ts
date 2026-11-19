@@ -1,7 +1,7 @@
-import type { Agent, Answered, Domain, Installed, Locale, Os, SavedGuide, Situation, StepId } from './types';
+import type { Agent, AgentSetup, Answered, Domain, Installed, Locale, Os, SavedGuide, Situation, StepId } from './types';
 
-const t = (locale: Locale, de: string, en: string) => (locale === 'de' ? de : en);
-const lines = (...parts: (string | false | null | undefined)[]) => parts.filter((p): p is string => typeof p === 'string').join('\n');
+export const t = (locale: Locale, de: string, en: string) => (locale === 'de' ? de : en);
+export const lines = (...parts: (string | false | null | undefined)[]) => parts.filter((p): p is string => typeof p === 'string').join('\n');
 
 /* ------------------------------------------------------------------ */
 /* Steps and the "where do you stand" questions                         */
@@ -91,11 +91,11 @@ export function installCommand(os: Os, agent: Agent): string {
 const resumeCommand = (agent: Agent) => (agent === 'claude' ? 'claude --continue' : 'codex resume --last');
 
 /** Creates the website folder (if needed), goes into it, starts the AI. Safe to paste every time. */
-export function startCommand(os: Os, agent: Agent, resume = false): string {
+export function startCommand(os: Os, agent: Agent, resume = false, folder = FOLDER): string {
   const run = resume ? resumeCommand(agent) : agentCommand(agent);
   return os === 'mac'
-    ? `mkdir -p ~/${FOLDER} && cd ~/${FOLDER} && ${run}`
-    : `mkdir -Force ~\\${FOLDER} | Out-Null; cd ~\\${FOLDER}; ${run}`;
+    ? `mkdir -p ~/${folder} && cd ~/${folder} && ${run}`
+    : `mkdir -Force ~\\${folder} | Out-Null; cd ~\\${folder}; ${run}`;
 }
 
 export function terminalName(_locale: Locale, os: Os) { return os === 'mac' ? 'Terminal' : 'PowerShell'; }
@@ -168,7 +168,7 @@ export function browserTestPrompt(locale: Locale): string {
 }
 
 /** Codex only: install what the browser tool needs and register it. */
-export function codexBrowserPrompt(locale: Locale, s: Answered): string {
+export function codexBrowserPrompt(locale: Locale, s: AgentSetup): string {
   const node = s.os === 'mac'
     ? t(locale, 'Wenn Homebrew schon da ist, `brew install node`. Sonst lade den offiziellen macOS-Installer (.pkg, LTS) von https://nodejs.org und öffne ihn, damit ich mich durchklicke. Wenn mein Mac-Passwort nötig ist, sag es vorher und erkläre, dass man beim Tippen nichts sieht.', 'If Homebrew is already there, `brew install node`. Otherwise download the official macOS installer (.pkg, LTS) from https://nodejs.org and open it so I can click through it. If my Mac password is needed, say so beforehand and explain that nothing shows while typing.')
     : t(locale, '`winget install --id OpenJS.NodeJS.LTS -e` (oder der offizielle Installer von nodejs.org). Sag mir vorher, dass Windows fragt, ob die App Änderungen vornehmen darf, und ich auf „Ja“ klicke.', '`winget install --id OpenJS.NodeJS.LTS -e` (or the official installer from nodejs.org). Warn me beforehand that Windows asks whether the app may make changes and I click “Yes”.');
@@ -192,17 +192,17 @@ export function codexBrowserPrompt(locale: Locale, s: Answered): string {
 /* Prompts                                                              */
 /* ------------------------------------------------------------------ */
 
-function notesFile(agent: Agent) { return agent === 'claude' ? 'CLAUDE.md' : 'AGENTS.md'; }
+export function notesFile(agent: Agent) { return agent === 'claude' ? 'CLAUDE.md' : 'AGENTS.md'; }
 export function handbookFile(locale: Locale) { return t(locale, 'MEINE-WEBSITE.md', 'MY-WEBSITE.md'); }
 
-function preamble(locale: Locale) {
+export function preamble(locale: Locale) {
   return t(locale,
     'Ich bin absolute Anfängerin / absoluter Anfänger und kenne mich mit Computern kaum aus. Sprich mit mir auf Deutsch, in kurzen, einfachen Sätzen, ohne Fachbegriffe, immer nur ein Schritt auf einmal. Wenn ich selbst etwas tun muss (klicken, mich registrieren, etwas bestätigen), sag mir genau was und wo, und warte, bis ich „fertig“ schreibe.',
     'I am a complete beginner and don’t know much about computers. Talk to me in plain English, in short simple sentences, without technical terms, one step at a time. Whenever I have to do something myself (click, sign up, confirm), tell me exactly what and where, and wait until I write “done”.');
 }
 
 /** Let the AI drive the browser where it can; the human keeps sign-ups, secrets and payments. */
-function browserHelp(locale: Locale, agent: Agent) {
+export function browserHelp(locale: Locale, agent: Agent) {
   const reconnect = agent === 'claude'
     ? t(locale, 'Tippe `/chrome` und wähle „Reconnect extension“; prüfe, ob Chrome offen ist', 'Type `/chrome` and choose “Reconnect extension”; check that Chrome is open')
     : t(locale, 'Prüfe mit `codex mcp list`, ob „chrome-devtools“ eingetragen ist; sonst richte es wie in der Anleitung neu ein', 'Check with `codex mcp list` that “chrome-devtools” is registered; otherwise set it up again as in the guide');
@@ -214,7 +214,7 @@ function browserHelp(locale: Locale, agent: Agent) {
   );
 }
 
-function safetyRules(locale: Locale) {
+export function safetyRules(locale: Locale) {
   return lines(
     t(locale, 'Regeln:', 'Rules:'),
     t(locale, '- Bitte mich nie, Passwörter oder Codes hier in den Chat zu schreiben. Anmeldungen passieren im Browser.', '- Never ask me to type passwords or codes into this chat. Sign-ins happen in the browser.'),
@@ -229,8 +229,8 @@ function safetyRules(locale: Locale) {
  * The AI must fix that itself – asking a beginner to "restart the terminal" kills the session,
  * and on a Mac closing the window doesn't even give them a new one (Terminal keeps running).
  */
-function restartHint(locale: Locale, s: Answered) {
-  const resume = startCommand(s.os, s.agent, true);
+export function restartHint(locale: Locale, s: AgentSetup, folder = FOLDER) {
+  const resume = startCommand(s.os, s.agent, true, folder);
   const fix = s.os === 'mac'
     ? t(locale,
       'ergänze im selben Befehl die üblichen Installationsorte, z. B. `export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"; …`, oder rufe das Werkzeug mit vollem Pfad auf',
@@ -299,7 +299,7 @@ export function freshTerminalSteps(locale: Locale, os: Os): string {
     : t(locale, 'Schließe das Fenster, klick auf Start, tippe „PowerShell“ und drück Enter – ein frisches Fenster öffnet sich.', 'Close the window, click Start, type “PowerShell” and press Enter – a fresh window opens.');
 }
 
-function installList(locale: Locale, os: Os) {
+export function installList(locale: Locale, os: Os) {
   if (os === 'mac') return lines(
     t(locale, '1. Git: Prüfe mit `git --version`. Fehlt es, starte `xcode-select --install`. Sag mir, dass sich ein Apple-Fenster öffnet, ich auf „Installieren“ klicke und warte.', '1. Git: check with `git --version`. If missing, run `xcode-select --install`. Tell me an Apple window will open, I click “Install” and wait.'),
     t(locale, '2. Node.js (aktuelle LTS-Version): Wenn Homebrew schon da ist, `brew install node`. Sonst lade den offiziellen macOS-Installer (.pkg) von https://nodejs.org herunter und öffne ihn, damit ich mich durchklicken kann. Installiere Homebrew nicht extra.', '2. Node.js (current LTS): if Homebrew is already there, `brew install node`. Otherwise download the official macOS installer (.pkg) from https://nodejs.org and open it so I can click through it. Don’t install Homebrew just for this.'),
@@ -426,6 +426,9 @@ function domainSection(locale: Locale, d: Domain) {
 /** Step 5: verify, publish, connect domain, write the handbook. */
 export const GUIDE_URL = 'https://diywithai.cekask.in';
 export const guideUrl = (locale: Locale) => `${GUIDE_URL}/${locale}/guides/business-website`;
+/** The follow-up guide: Google Search Console + SEO. */
+export const seoGuidePath = (locale: Locale) => `/${locale}/guides/google-search-seo`;
+export const seoGuideUrl = (locale: Locale) => `${GUIDE_URL}${seoGuidePath(locale)}`;
 
 /**
  * After step 5, on a NEW computer: step 1 of the guide (AI + browser) first, then this prompt.
@@ -493,7 +496,7 @@ export function launchPrompt(locale: Locale, s: Answered): string {
     s.domain === 'have' ? t(locale, '   - **Alte Einstellungen:** die notierten Nameserver und DNS-Einträge von vorher, mit dem Hinweis, dass damit nur die Domain zurückgestellt werden kann – nicht die alte Website selbst.', '   - **Old settings:** the nameservers and DNS records noted before the switch, with a note that they only let me point the domain back – they don’t bring back the old website itself.') : null,
     t(locale, `   - **Neuer Computer:** Öffne ${guideUrl(locale)}, mach dort Schritt 1 (KI einrichten) und nutze dann in Schritt 5 den Prompt „Neuer Computer“. Mein Code ist sicher auf GitHub, nichts geht verloren.`, `   - **New computer:** open ${guideUrl(locale)}, do step 1 there (set up your AI), then use the “New computer” prompt in step 5. My code is safe on GitHub, nothing gets lost.`),
     t(locale, '   - **Wenn etwas nicht geht:** was ich der KI sagen kann (z. B. „Meine Website ist nicht erreichbar, prüfe bitte, woran es liegt“).', '   - **If something doesn’t work:** what I can tell the AI (e.g. “My website isn’t reachable, please check why”).'),
-    t(locale, '   - **Optional für später:** Google Search Console, damit ich die Website bei Google anmelden kann – biete es mir am Ende an.', '   - **Optional for later:** Google Search Console so I can register the website with Google – offer it to me at the end.'),
+    t(locale, `   - **Bei Google gefunden werden:** Die Anleitung „Google Search Console & SEO“ unter ${seoGuideUrl(locale)} meldet die Website bei Google an und verbessert sie für Suchmaschinen.`, `   - **Getting found on Google:** the guide “Google Search Console & SEO” at ${seoGuideUrl(locale)} registers the website with Google and improves it for search engines.`),
     '',
     browserHelp(locale, s.agent),
     '',

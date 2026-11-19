@@ -174,8 +174,8 @@ test('the AI never makes a beginner restart the terminal; the fallback uses a ne
 });
 
 test('Codex browser setup: Chrome, Node, the official MCP per OS, and no self-restart', () => {
-  const mac = codexBrowserPrompt('en', { os: 'mac', agent: 'codex', installed: 'no', domain: 'later' });
-  const win = codexBrowserPrompt('en', { os: 'windows', agent: 'codex', installed: 'no', domain: 'later' });
+  const mac = codexBrowserPrompt('en', { os: 'mac', agent: 'codex', installed: 'no' });
+  const win = codexBrowserPrompt('en', { os: 'windows', agent: 'codex', installed: 'no' });
   for (const p of [mac, win]) {
     assert.ok(p.includes('google.com/chrome') && p.includes('node --version') && p.includes('codex mcp list'));
     assert.ok(p.includes('Do NOT restart Codex yourself'));
@@ -184,7 +184,7 @@ test('Codex browser setup: Chrome, Node, the official MCP per OS, and no self-re
   assert.ok(win.includes('command = "cmd"') && win.includes('"/c", "npx", "-y", "chrome-devtools-mcp@latest"'));
   assert.ok(win.includes('SystemRoot="C:\\\\Windows"'), 'TOML backslashes must stay escaped');
   assert.ok(win.includes('startup_timeout_ms = 20_000'));
-  assert.ok(codexBrowserPrompt('de', { os: 'mac', agent: 'codex', installed: 'no', domain: 'later' }).includes('Starte Codex NICHT selbst neu'));
+  assert.ok(codexBrowserPrompt('de', { os: 'mac', agent: 'codex', installed: 'no' }).includes('Starte Codex NICHT selbst neu'));
 });
 
 test('browser test demands a real browser, not curl', () => {
